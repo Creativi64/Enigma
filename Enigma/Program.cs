@@ -23,7 +23,7 @@ namespace Enigma
 			},
 			ReverserRoller = new RollerSetup()
 			{
-				name = "Reverser",
+				Name = "Reverser",
 				RollerCharacters = EnigmaSetup.Umkehrwalze_B,
 			},
 			RollerSetups = new List<RollerSetup>()
@@ -31,13 +31,13 @@ namespace Enigma
 				// Oben nach unten ist rechts nach links
 				
 				new RollerSetup() {
-					name = "ETW",
+					Name = "ETW",
 					RollerCharacters =EnigmaSetup.defaultRoller,
 					ShiftCharacters = EnigmaSetup.defaultRoller,
 				},
 				new RollerSetup()
 				{
-					name = "FIRST",
+					Name = "FIRST",
 					ShiftCharShift='v',
 					InitialShift='a',
 					ShiftCharacters = new List<char>(){'y'},
@@ -45,7 +45,7 @@ namespace Enigma
 				},
 				new RollerSetup()
 				{
-					name = "Second",
+					Name = "Second",
 					ShiftCharShift='a',
 					InitialShift = 'n',
 					ShiftCharacters = new List<char>(){'r'},
@@ -53,7 +53,7 @@ namespace Enigma
 				},
 				new RollerSetup()
 				{
-					name = "Third",
+					Name = "Third",
 					ShiftCharShift='a',
 					InitialShift = 'j',
 					ShiftCharacters = new List<char>(){'m'},
@@ -61,7 +61,7 @@ namespace Enigma
 				},
 				new RollerSetup()
 				{
-					name = "BETAROller",
+					Name = "BETAROller",
 					ShiftCharShift='a',
 					InitialShift = 'v',
 					ShiftCharacters = new List<char>(),
@@ -80,26 +80,26 @@ namespace Enigma
 			//var enc = "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
 			//var h = File.ReadAllText(@".\lorem.txt").ToLower();
 			var enc = "NCZW".Replace(" ", "").ToLower();
-			Stopwatch t = new Stopwatch();
+			Stopwatch t = new();
 			t.Start();
 			string encrypted = enigma.Crypt(enc);
 			//enigma2.printCurrentConfig();
-			string encryped = enigma2.Crypt(encrypted);
+			string _encrypted = enigma2.Crypt(encrypted);
 
 			t.Stop();
 			//Console.WriteLine(h.Length);
 			Console.WriteLine(t.ElapsedMilliseconds);
 			Console.WriteLine(encrypted);
 			Console.WriteLine("----");
-			Console.WriteLine(encryped);
+			Console.WriteLine(_encrypted);
 			Console.ReadLine();
 		}
 	}
 
 	public class Enigma
 	{
-		private List<Roller> configuration;
-		private List<CharacterPair> permutations;
+		private readonly List<Roller> configuration;
+		private readonly List<CharacterPair> permutations;
 
 		public Enigma(EnigmaSetup setup)
 		{
@@ -114,7 +114,7 @@ namespace Enigma
 			{
 				bool shiftNextCharacter = false;
 
-				Queue<char?> chosenCharacters = new Queue<char?>();
+				Queue<char?> chosenCharacters = new();
 				chosenCharacters.Enqueue(c);
 
 				char tempChar = permutate(c);
@@ -200,7 +200,7 @@ namespace Enigma
 		// https://www.cryptomuseum.com/crypto/enigma/wiring.htm
 		public readonly static List<char> defaultRoller = new() { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-		public readonly static List<char> Umkehrwalze_D = new List<char>() { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+		public readonly static List<char> Umkehrwalze_D = new() { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 		public readonly static List<char> Umkehrwalze_B = new() { 'e', 'n', 'k', 'q', 'a', 'u', 'y', 'w', 'j', 'i', 'c', 'o', 'p', 'b', 'l', 'm', 'd', 'x', 'z', 'v', 'f', 't', 'h', 'r', 'g', 's' };
 		public readonly static List<char> Umkehrwalze_C = new() { 'a', 'd', 'o', 'b', 'j', 'n', 't', 'k', 'v', 'e', 'h', 'm', 'l', 'f', 'c', 'w', 'z', 'a', 'x', 'g', 'y', 'i', 'p', 's', 'u', 'q' };
 
@@ -215,7 +215,7 @@ namespace Enigma
 		public readonly static List<char> Gamma = new() { 'f', 's', 'o', 'k', 'a', 'n', 'u', 'e', 'r', 'h', 'm', 'b', 't', 'i', 'y', 'c', 'w', 'l', 'q', 'p', 'z', 'x', 'v', 'g', 'j', 'd' };
 
 		public List<RollerSetup> RollerSetups { get; set; } = new List<RollerSetup>();
-		public RollerSetup ReverserRoller { get; set; }
+		public RollerSetup ReverserRoller { get; set; } = new RollerSetup();
 		public List<CharacterPair> Permutations { get; set; } = new List<CharacterPair>();
 
 		public List<Roller> GetRollerSetup()
@@ -224,9 +224,9 @@ namespace Enigma
 
 			foreach (var _setup in RollerSetups)
 			{
-				tempSetup.Add(new Roller(defaultRoller, _setup.RollerCharacters, _setup.InitialShift, _setup.ShiftCharShift, _setup.ShiftCharacters, _setup.name));
+				tempSetup.Add(new Roller(defaultRoller, _setup.RollerCharacters, _setup.InitialShift, _setup.ShiftCharShift, _setup.ShiftCharacters, _setup.Name));
 			}
-			tempSetup.Add(new Roller(defaultRoller, ReverserRoller.RollerCharacters, ReverserRoller.InitialShift, ReverserRoller.ShiftCharShift, ReverserRoller.ShiftCharacters, ReverserRoller.name));
+			tempSetup.Add(new Roller(defaultRoller, ReverserRoller.RollerCharacters, ReverserRoller.InitialShift, ReverserRoller.ShiftCharShift, ReverserRoller.ShiftCharacters, ReverserRoller.Name));
 			return tempSetup;
 		}
 	}
@@ -382,7 +382,7 @@ namespace Enigma
 				effectiveRollerShift++;
 				return;
 			}
-			throw new Exception("illeighasl mobve");
+			throw new Exception("Illegal move");
 		}
 
 	}
@@ -393,7 +393,7 @@ namespace Enigma
 		public char? ShiftCharShift { get; set; } = 'a';
 
 		public List<char> ShiftCharacters { get; set; } = new();
-		public string name { get; set; }
+		public string Name { get; set; } = "";
 		public List<char> RollerCharacters { get; set; } = new List<char>();
 	}
 
