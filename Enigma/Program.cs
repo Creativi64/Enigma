@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
-using System.Dynamic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Enigma
 {
-	internal class Program
+	public class Program
 	{
 		private static EnigmaSetup enigmaSetup = new()
 		{
@@ -150,7 +141,7 @@ namespace Enigma
 			}
 			return output.ToString();
 		}
-		
+
 		private void printCurrentConfig(Queue<char?>? ch = null)
 		{
 			var list = new List<(List<CharacterPair>, string)>();
@@ -230,7 +221,7 @@ namespace Enigma
 		public List<Roller> GetRollerSetup()
 		{
 			var tempSetup = new List<Roller>();
-			
+
 			foreach (var _setup in RollerSetups)
 			{
 				tempSetup.Add(new Roller(defaultRoller, _setup.RollerCharacters, _setup.InitialShift, _setup.ShiftCharShift, _setup.ShiftCharacters, _setup.name));
@@ -242,6 +233,20 @@ namespace Enigma
 
 	public class Roller
 	{
+		public string Name { get; set; }
+		public int InitialShift { get; }
+		public int InitialShiftShift { get; }
+
+		private List<CharacterPair> characterList = new();
+		private List<char> ShiftCharacters { get; set; } = new List<char>();
+
+		private int effectiveRollerShift = 0;
+
+		public int EffectiveRollerShift
+		{
+			get { return effectiveRollerShift; }
+		}
+
 		public Roller(List<char> defaultSet, List<char> mutationSet, char? initialShift, char? initialShiftShift, List<char> shiftCharacters, string name)
 		{
 			// default -> a
@@ -276,35 +281,19 @@ namespace Enigma
 			for (int i = 0; i < shifting; i++)
 			{
 				a++;
-                shift();
+				shift();
 			}
-			this.name = name;
+			this.Name = name;
 			this.InitialShift = shifting;
 		}
-		public string name { get; set; }
-
-		private int effectiveRollerShift = 0;
-
-		public int EffectiveRollerShift
-		{
-			get { return effectiveRollerShift; }
-		}
-
-
-		public int InitialShift { get; }
-		public int InitialShiftShift { get; }
-
-		private List<CharacterPair> characterList = new();
-
-		private List<char> ShiftCharacters { get; set; } = new List<char>();
 
 		/// <summary>
-		/// 
+		/// Crypts a character
 		/// </summary>
 		/// <param name="character"></param>
 		/// <param name="shiftAllowed"></param>
 		/// <param name="reverse"></param>
-		/// <returns>index of the next char, the current char, if the next rollen is able to turn</returns>
+		/// <returns>index of the next char, the current char, if the next roller is able to turn</returns>
 		/// <exception cref="Exception"></exception>
 		public (int, char, bool) CryptCharacter(int character, bool shiftAllowed, bool reverse = false)
 		{
@@ -360,7 +349,7 @@ namespace Enigma
 				if (pair != null)
 				{
 					int nextChar = characterList.FindIndex(n => n.Second == pair.First);
-					
+
 					// Only when turning
 					if (InitialShiftShift != 0)
 					{
@@ -377,13 +366,13 @@ namespace Enigma
 
 		public (List<CharacterPair>, string) GetState()
 		{
-			return (characterList, this.name);
+			return (characterList, this.Name);
 		}
 
 		private void shift(bool log = false)
 		{
 			if (log)
-				Console.Write($" <{name} Shifted>");
+				Console.Write($" <{Name} Shifted>");
 
 			var t = characterList.First();
 			if (t != null)
@@ -401,7 +390,6 @@ namespace Enigma
 	public class RollerSetup
 	{
 		public char? InitialShift { get; set; } = 'a';
-
 		public char? ShiftCharShift { get; set; } = 'a';
 
 		public List<char> ShiftCharacters { get; set; } = new();
